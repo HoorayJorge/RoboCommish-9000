@@ -9,6 +9,7 @@ import javax.security.auth.login.LoginException;
 public class BotBuilder {
 
     public static JDA api;
+    public static long testChannel = 640896377488146438L;
 
         static{
             try {
@@ -28,5 +29,4 @@ public class BotBuilder {
                 e.printStackTrace();
             }
         }
-    //public static JDA api = (JDA) new JDABuilder(Token.token);
 }

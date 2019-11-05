@@ -1,4 +1,3 @@
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -17,8 +16,14 @@ public class MessageListener extends ListenerAdapter {
                 + event.getMessage().getContentDisplay()
         );
 
-        event.getChannel().sendMessage("I'm sorry, "
-                +event.getAuthor().getName()
-                +".  I'm afraid I can't do that.").queue();
+        /*if(event.getMessage().getContentRaw().equals("!dap")){
+            BotBuilder.api
+                    .getTextChannelById(BotBuilder.testChannel)
+                    .sendMessage("\uD83E\uDD1C\uD83C\uDFFF"+"\uD83D\uDCA5"+"\uD83E\uDD1B\uD83C\uDFFC").queue();
+        }else{
+            */event.getChannel().sendMessage("I'm sorry, "
+                    +event.getAuthor().getName()
+                    +".  I'm afraid I can't do that.").queue();
+        //}
     }
 }

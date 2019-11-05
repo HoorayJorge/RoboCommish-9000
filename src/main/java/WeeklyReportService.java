@@ -1,6 +1,3 @@
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
-
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
