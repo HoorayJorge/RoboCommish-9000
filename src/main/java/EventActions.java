@@ -4,7 +4,9 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 public class EventActions {
@@ -19,11 +21,11 @@ public class EventActions {
         event.getChannel().sendMessage(tmp).queue();
     }
 
-    public static void standings(MessageReceivedEvent event){
+    public static void standings(MessageReceivedEvent event) throws IOException {
         JsonObject rootObj;
         JsonArray standingsObj;
 
-        try {
+
             rootObj = InputController.downloadAPIData("https://www79.myfantasyleague.com/2019/export?TYPE=leagueStandings&L="
                     +InputController.leagueId+"&APIKEY="+InputController.apiKey+"&JSON=1");
             standingsObj = rootObj.getAsJsonObject("leagueStandings").getAsJsonArray("franchise").getAsJsonArray();
@@ -94,21 +96,55 @@ public class EventActions {
             event.getChannel().sendMessage(tmp1).queue();
             event.getChannel().sendMessage(tmp2).queue();
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
-    public static void picks(MessageReceivedEvent event, String parts[]){
+    public static void picks(MessageReceivedEvent event, String parts[]) throws IOException {
+        JsonObject rootObj;
+        JsonArray picksObj;
+        JsonArray teamObj;
+        ArrayList<Pick> teamPicks;
 
         if(parts.length>1) {
             if (TeamList.teamMapNames.containsKey(parts[1].toLowerCase())) {
-                System.out.println(TeamList.teamMapNames.get(parts[1].toLowerCase()).teamName);
+
+                rootObj = InputController.downloadAPIData("https://www79.myfantasyleague.com/2019/export?TYPE=futureDraftPicks&L="
+                        +InputController.leagueId+"&APIKEY="
+                        +InputController.apiKey+"&JSON=1");
+                picksObj = rootObj.getAsJsonObject("futureDraftPicks")
+                        .getAsJsonArray("franchise")
+                        .getAsJsonArray();
+                teamObj = picksObj.get(TeamList.teamMapNames
+                        .get(parts[1]
+                                .toLowerCase())
+                        .teamId-1)
+                        .getAsJsonObject()
+                        .get("futureDraftPick")
+                        .getAsJsonArray();
+
+                String tmp = "Picks\n";
+
+                teamPicks = new ArrayList<>();
+                for (int i = 0; i < teamObj.size(); i++){
+                    teamPicks.add(new Pick(teamObj.get(i).getAsJsonObject()
+                            .get("round").getAsInt(),
+                            TeamList.teamMap.get(teamObj.get(i).getAsJsonObject()
+                                    .get("originalPickFor").getAsInt()).teamName,
+                            teamObj.get(i).getAsJsonObject().get("year").getAsInt()));
+                }
+
+                Collections.sort(teamPicks);
+
+                for (int i = 0; i < teamPicks.size(); i++){
+                    tmp = tmp.concat(teamPicks.get(i).toString()+"\n");
+                }
+
+                event.getChannel().sendMessage(tmp).queue();
+
             } else {
-                System.out.println("Team not found.  Please use the exact team name listed with the !teams command.");
+                event.getChannel().sendMessage("Team not found.  Please use the exact team name listed with the !teams command.").queue();
             }
         }else{
-            System.out.println("Please enter a team: !picks <Team Name>.  A list of teams can be found with the !teams command.");
+            event.getChannel().sendMessage("Please enter a team: !picks <Team Name>.  A list of teams can be found with the !teams command.").queue();
         }
 
     }
@@ -126,5 +162,10 @@ public class EventActions {
         event.getChannel().sendMessage("I'm sorry, "
                 +event.getAuthor().getName()
                 +".  I'm afraid I can't do that.").queue();
+    }
+
+    public static void commands(MessageReceivedEvent event){
+        String tmp = "Commands:\n !commands\n !teams\n !standings\n !picks <Team Name>";
+        event.getChannel().sendMessage(tmp).queue();
     }
 }

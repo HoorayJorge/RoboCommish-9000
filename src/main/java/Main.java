@@ -4,6 +4,7 @@ public class Main {
     public static void main(String args[]) throws InterruptedException {
 
         BuildTeamList();
+        new WeeklyReportService();
         BotBuilder.api.awaitReady();
 
     }
@@ -20,7 +21,7 @@ public class Main {
         TeamList.teamMap.put(9, new Team(9, "Barkley Wine", "Alex Grier", "Jimmy"));
         TeamList.teamMap.put(10, new Team(10, "Half a Graham", "Jordon Goth", "Jordan"));
         TeamList.teamMap.put(11, new Team(11, "Just Burfict", "Valerie Hutson", "Valerie"));
-        TeamList.teamMap.put(12, new Team(12, "Masterdeflatior", "Justin Milkovich", "Justin"));
+        TeamList.teamMap.put(12, new Team(12, "Masterdeflator", "Justin Milkovich", "Justin"));
 
         Division.divisionOne.put(1, TeamList.teamMap.get(1));
         Division.divisionOne.put(2, TeamList.teamMap.get(2));

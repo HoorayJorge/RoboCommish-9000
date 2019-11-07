@@ -14,21 +14,21 @@ public class WeeklyReportService {
     private void startScheduler() {
         Calendar with = Calendar.getInstance();
         Map<Integer, Integer> dayToDelay = new HashMap<Integer, Integer>();
-        dayToDelay.put(Calendar.FRIDAY, 4);
-        dayToDelay.put(Calendar.SATURDAY, 3);
-        dayToDelay.put(Calendar.SUNDAY, 2);
-        dayToDelay.put(Calendar.MONDAY, 1);
-        dayToDelay.put(Calendar.TUESDAY, 0);
-        dayToDelay.put(Calendar.WEDNESDAY, 6);
-        dayToDelay.put(Calendar.THURSDAY, 5);
+        dayToDelay.put(Calendar.FRIDAY, 5);
+        dayToDelay.put(Calendar.SATURDAY, 4);
+        dayToDelay.put(Calendar.SUNDAY, 3);
+        dayToDelay.put(Calendar.MONDAY, 2);
+        dayToDelay.put(Calendar.TUESDAY, 1);
+        dayToDelay.put(Calendar.WEDNESDAY, 0);
+        dayToDelay.put(Calendar.THURSDAY, 6);
         int dayOfWeek = with.get(Calendar.DAY_OF_WEEK);
         int hour = with.get(Calendar.HOUR_OF_DAY);
         int delayInDays = dayToDelay.get(dayOfWeek);
         int delayInHours = 0;
-        if (delayInDays == 6 && hour < 2) {
-            delayInHours = 2 - hour;
+        if (delayInDays == 6 && hour < 19) {
+            delayInHours = 19 - hour;
         } else {
-            delayInHours = delayInDays * 24 + ((24 - hour) + 2);
+            delayInHours = delayInDays * 24 + ((24 - hour) + 19);
         }
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(new WeeklyTask(), delayInHours,
