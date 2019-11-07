@@ -43,5 +43,9 @@ public class Main {
         for (HashMap.Entry entry : Division.divisionOne.entrySet()){
             Division.divisionOneList.add((Team) entry.getValue());
         }
+
+        for (HashMap.Entry entry : TeamList.teamMap.entrySet()){
+            TeamList.teamMapNames.put(entry.getValue().toString().toLowerCase(), (Team) entry.getValue());
+        }
     }
 }
