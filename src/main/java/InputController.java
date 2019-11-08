@@ -9,8 +9,8 @@ import java.net.URLConnection;
 
 public class InputController {
 
-    public static String apiKey = "ax1p182QvuKmx1qmPl7GZzMeF7ox";
-    public static String leagueId = "67761";
+    public static String apiKey = Token.apiKey;
+    public static String leagueId = Token.leagueId;
 
     public InputController(){
 
@@ -35,6 +35,18 @@ public class InputController {
         JsonElement root = jp.parse(new JsonReader(file));
         JsonArray rootObj = root.getAsJsonArray();
         return rootObj;
+    }
+
+    public static void serializePlayerJson(){
+
+    }
+
+    public static void deserializePlayerJson(){
+
+    }
+
+    public static void buildPlayerList(){
+
     }
 
 }
