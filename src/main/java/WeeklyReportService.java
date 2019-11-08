@@ -25,10 +25,10 @@ public class WeeklyReportService {
         int hour = with.get(Calendar.HOUR_OF_DAY);
         int delayInDays = dayToDelay.get(dayOfWeek);
         int delayInHours = 0;
-        if (delayInDays == 6 && hour < 19) {
-            delayInHours = 19 - hour;
+        if (delayInDays == 6 && hour < 1) {
+            delayInHours = 1 - hour;
         } else {
-            delayInHours = delayInDays * 24 + ((24 - hour) + 19);
+            delayInHours = delayInDays * 24 + ((24 - hour) + 1);
         }
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(new WeeklyTask(), delayInHours,
