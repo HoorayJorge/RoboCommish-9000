@@ -6,7 +6,7 @@ public class Main {
 
         BuildTeamList();
         //PlayerList.readPlayerData();
-        System.out.println(PlayerList.thePlayerList.get(0));
+        //System.out.println(PlayerList.thePlayerList.get(0));
         new WeeklyReportService();
         BotBuilder.api.awaitReady();
 
