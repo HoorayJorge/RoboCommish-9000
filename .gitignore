@@ -18,3 +18,5 @@ buildNumber.properties
 .idea/misc.xml
 .idea/vcs.xml
 .DS_Store
+/liveScoring.json
+/Output.json

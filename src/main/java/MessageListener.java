@@ -10,6 +10,7 @@ public class MessageListener extends ListenerAdapter {
     @Override
     public void onPrivateMessageReceived(@Nonnull PrivateMessageReceivedEvent event) {
 
+        //String parts[] = event.getMessage().getContentRaw().split(" ", 2);
         EventActions.privateMessageReceived(event);
 
     }
@@ -40,6 +41,12 @@ public class MessageListener extends ListenerAdapter {
 
         }else if (event.getMessage().getContentRaw().equalsIgnoreCase("!commands")){
             EventActions.commands(event);
+        }else if(parts[0].equalsIgnoreCase("!score")){
+            try {
+                EventActions.score(event, parts);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

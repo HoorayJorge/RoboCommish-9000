@@ -4,10 +4,8 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.text.DecimalFormat;
+import java.util.*;
 
 public class EventActions {
 
@@ -165,7 +163,118 @@ public class EventActions {
     }
 
     public static void commands(MessageReceivedEvent event){
-        String tmp = "Commands:\n !commands\n !teams\n !standings\n !picks <Team Name>";
+        String tmp = "Commands:\n !commands\n !teams\n !standings\n !picks <Team Name>\n !score <Team Name>";
         event.getChannel().sendMessage(tmp).queue();
+    }
+
+    public static void score(MessageReceivedEvent event, String parts[]) throws IOException {
+        JsonObject scoringObj;
+        JsonObject matchupObj;
+
+        if(parts.length>1) {
+            if (TeamList.teamMapNames.containsKey(parts[1].toLowerCase())) {
+
+                Team enteredTeam = TeamList.teamMapNames.get(parts[1].toLowerCase());
+                Team teamOne;
+                Team teamTwo;
+                int week;
+                JsonArray arrayObj;
+
+                HashMap<Integer, JsonObject> teamObjectsMap = new HashMap<>();
+                StringBuilder message = new StringBuilder();
+                ArrayList<Team> matchupTeams = new ArrayList<>();
+
+                scoringObj = InputController.downloadAPIData("https://www79.myfantasyleague.com/2019/export?TYPE=liveScoring&L="
+                        + InputController.leagueId+"&APIKEY="
+                        +InputController.apiKey+"=&DETAILS=0&JSON=1");
+
+                week = scoringObj.getAsJsonObject("liveScoring").getAsJsonPrimitive("week").getAsInt();
+
+                matchupObj = InputController.downloadAPIData("https://www79.myfantasyleague.com/2019/export?TYPE=schedule&L="
+                        +InputController.leagueId+"&APIKEY="
+                        +InputController.apiKey+"&W="
+                        +week+"&F="
+                        +String.format("%04d", enteredTeam.teamId)+"&JSON=1");
+
+                int teamOneInt = matchupObj.getAsJsonObject("schedule")
+                        .getAsJsonObject("weeklySchedule")
+                        .getAsJsonObject("matchup")
+                        .getAsJsonArray("franchise")
+                        .get(0).getAsJsonObject()
+                        .getAsJsonPrimitive("id").getAsInt();
+
+                teamOne = TeamList.teamMap.get(teamOneInt);
+                teamOne.line = matchupObj.getAsJsonObject("schedule")
+                        .getAsJsonObject("weeklySchedule")
+                        .getAsJsonObject("matchup")
+                        .getAsJsonArray("franchise")
+                        .get(0).getAsJsonObject()
+                        .getAsJsonPrimitive("spread").getAsDouble();
+
+                int teamTwoInt = matchupObj.getAsJsonObject("schedule")
+                        .getAsJsonObject("weeklySchedule")
+                        .getAsJsonObject("matchup")
+                        .getAsJsonArray("franchise")
+                        .get(1).getAsJsonObject()
+                        .getAsJsonPrimitive("id").getAsInt();
+
+                teamTwo = TeamList.teamMap.get(teamTwoInt);
+                teamTwo.line = matchupObj.getAsJsonObject("schedule")
+                        .getAsJsonObject("weeklySchedule")
+                        .getAsJsonObject("matchup")
+                        .getAsJsonArray("franchise")
+                        .get(1).getAsJsonObject()
+                        .getAsJsonPrimitive("spread").getAsDouble();
+
+                arrayObj = scoringObj
+                        .getAsJsonObject("liveScoring")
+                        .getAsJsonArray("matchup").getAsJsonArray();
+
+                for (int i = 0; i < arrayObj.size(); i++){
+
+                    for (int j = 0; j < arrayObj
+                            .get(i)
+                            .getAsJsonObject()
+                            .getAsJsonArray("franchise")
+                            .size(); j++){
+
+                        JsonObject tmp = arrayObj
+                                .get(i)
+                                .getAsJsonObject()
+                                .getAsJsonArray("franchise")
+                                .get(j)
+                                .getAsJsonObject();
+
+                        teamObjectsMap.put(tmp.get("id").getAsInt(), tmp);
+                    }
+                }
+
+                teamOne.addScoringData(teamObjectsMap.get(teamOneInt));
+                teamTwo.addScoringData(teamObjectsMap.get(teamTwoInt));
+
+                matchupTeams.add(teamOne);
+                matchupTeams.add(teamTwo);
+
+                DecimalFormat df = new DecimalFormat("#,###,##0.00");
+                message.append("Score\n");
+                message.append(" ---------- \n");
+                for (int i = 0; i < matchupTeams.size(); i++){
+                    message.append(matchupTeams.get(i).teamName
+                            +" -- "+df.format(matchupTeams.get(i).score)+"\n");
+                    message.append("Yet to Play: "+matchupTeams.get(i).playersYetToPlay+"\n");
+                    message.append("Playing: "+matchupTeams.get(i).playersCurrentlyPlaying+"\n");
+                    message.append("Playtime Left: "+matchupTeams.get(i).gameSecondsRemaining+"\n");
+                    message.append("Line: "+df.format(matchupTeams.get(i).line)+"\n");
+                    message.append(" ---------- \n");
+                }
+
+                event.getChannel().sendMessage(message.toString()).queue();
+
+            } else {
+                event.getChannel().sendMessage("Team not found.  Please use the exact team name listed with the !teams command.").queue();
+            }
+        }else{
+            event.getChannel().sendMessage("Please enter a team: !score <Team Name>.  A list of teams can be found with the !teams command.").queue();
+        }
     }
 }

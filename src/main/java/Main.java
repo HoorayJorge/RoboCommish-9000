@@ -1,9 +1,12 @@
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 
 public class Main {
-    public static void main(String args[]) throws InterruptedException {
+    public static void main(String args[]) throws InterruptedException, FileNotFoundException {
 
         BuildTeamList();
+        //PlayerList.readPlayerData();
+        System.out.println(PlayerList.thePlayerList.get(0));
         new WeeklyReportService();
         BotBuilder.api.awaitReady();
 

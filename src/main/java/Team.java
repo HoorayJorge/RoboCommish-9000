@@ -1,3 +1,4 @@
+import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 
 public class Team implements Comparable<Team> {
@@ -11,6 +12,13 @@ public class Team implements Comparable<Team> {
     public int losses;
     public int ties;
 
+    public int playersCurrentlyPlaying;
+    public int gameSecondsRemaining;
+    public int isHome;
+    public int playersYetToPlay;
+    public double score;
+    public double line;
+
     public Team(int teamId, String teamName, String ownerName, String firstName){
 
         this.teamId = teamId;
@@ -21,6 +29,7 @@ public class Team implements Comparable<Team> {
         this.wins = 0;
         this.losses = 0;
         this.ties = 0;
+
     }
 
     public String toString(){
@@ -31,6 +40,16 @@ public class Team implements Comparable<Team> {
         Integer thisRank = this.overallRank;
         Integer thatRank = thatTeam.overallRank;
         return thisRank.compareTo(thatRank);
+    }
+
+    public void addScoringData(JsonObject scoringObj){
+
+        playersCurrentlyPlaying = scoringObj.get("playersCurrentlyPlaying").getAsInt();
+        gameSecondsRemaining = scoringObj.get("gameSecondsRemaining").getAsInt();
+        isHome = scoringObj.get("isHome").getAsInt();
+        playersYetToPlay = scoringObj.get("playersYetToPlay").getAsInt();
+        score = scoringObj.get("score").getAsDouble();
+
     }
 
 }
